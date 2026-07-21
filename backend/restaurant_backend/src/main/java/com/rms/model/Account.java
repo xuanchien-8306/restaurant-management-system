@@ -2,7 +2,6 @@ package com.rms.model;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -35,6 +34,9 @@ public class Account {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Customer customer;
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Staff staff;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

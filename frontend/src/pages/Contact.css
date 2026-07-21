@@ -1,0 +1,129 @@
+.contact-banner {
+    height: 350px;
+    background-image: url('https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.contact-banner-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.65);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.contact-banner-overlay h1 {
+    color: #ffffff;
+    font-size: 42px;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 25px;
+}
+
+.contact-icon {
+    font-size: 24px;
+    color: #d32f2f;
+    margin-right: 20px;
+    background: #ffebee;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    transition: transform 0.3s;
+}
+
+.contact-info-item:hover .contact-icon {
+    transform: scale(1.1);
+    background: #d32f2f;
+    color: #ffffff;
+}
+
+.contact-text h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.contact-text p {
+    margin: 0;
+    color: #666;
+    font-size: 15px;
+}
+
+.social-links {
+    display: flex;
+    gap: 15px;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    color: #fff;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.social-icon.fb {
+    background-color: #1877f2;
+}
+
+.social-icon.zalo {
+    background-color: #0068ff;
+}
+
+.social-icon:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    color: #fff;
+}
+
+.contact-form-card {
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    padding: 20px 10px;
+    border: 1px solid #f0f0f0;
+}
+
+.contact-form-card .ant-form-item-label > label {
+    font-weight: 500;
+    color: #444;
+}
+
+.contact-form-card .ant-input, .contact-form-card .ant-input-password {
+    border-radius: 8px;
+}
+
+.btn-submit-contact {
+    background-color: #ff9800;
+    border-color: #ff9800;
+    height: 50px;
+    padding: 0 40px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+.btn-submit-contact:hover {
+    background-color: #e68a00 !important;
+    border-color: #e68a00 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}

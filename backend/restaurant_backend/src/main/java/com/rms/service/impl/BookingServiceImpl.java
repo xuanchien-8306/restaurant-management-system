@@ -24,15 +24,32 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(BookingRequest request, String username) {
+
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
         Customer customer = account.getCustomer();
-        LocalDateTime resTime = LocalDateTime.of(request.getDate(), request.getTime());
+
+        LocalDateTime resTime =
+                LocalDateTime.of(request.getDate(), request.getTime());
+
+        String customerName =
+                (account.getFullName() != null && !account.getFullName().trim().isEmpty())
+                        ? account.getFullName()
+                        : account.getUsername();
+
+        String customerPhone =
+                (account.getPhone() != null && !account.getPhone().trim().isEmpty())
+                        ? account.getPhone()
+                        : request.getPhone();
 
         Reservation reservation = Reservation.builder()
                 .customer(customer)
-                .reservationTime(resTime)
+                .customerName(customerName)
+                .customerPhone(customerPhone)
+                .reservationCode("RES-" + System.currentTimeMillis())
+                .reservationDate(resTime.toLocalDate())
+                .reservationTime(resTime.toLocalTime())
                 .guestCount(request.getGuestCount())
                 .note(request.getNote())
                 .status("PENDING")
@@ -40,26 +57,33 @@ public class BookingServiceImpl implements BookingService {
 
         reservation = reservationRepository.save(reservation);
 
-        return mapToDto(reservation, account);
+        return mapToDto(reservation);
     }
 
     @Override
     public List<BookingDto> getMyBookings(String username) {
+
         Account account = accountRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        return reservationRepository.findByCustomerIdOrderByReservationTimeDesc(account.getCustomer().getId())
+        return reservationRepository
+                .findByCustomerIdOrderByReservationDateDescReservationTimeDesc(
+                        account.getCustomer().getId())
                 .stream()
-                .map(res -> mapToDto(res, account))
+                .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
-    private BookingDto mapToDto(Reservation reservation, Account account) {
+    private BookingDto mapToDto(Reservation reservation) {
+
         return BookingDto.builder()
                 .id(reservation.getId())
-                .customerName(reservation.getCustomer().getFullName())
-                .phone(account.getPhone())
-                .reservationTime(reservation.getReservationTime())
+                .customerName(reservation.getCustomerName())
+                .phone(reservation.getCustomerPhone())
+                .reservationTime(
+                        LocalDateTime.of(
+                                reservation.getReservationDate(),
+                                reservation.getReservationTime()))
                 .guestCount(reservation.getGuestCount())
                 .note(reservation.getNote())
                 .status(reservation.getStatus())

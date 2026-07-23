@@ -35,28 +35,33 @@ const Booking = () => {
         }
     };
 
+    // Tìm hàm onFinish của bạn và sửa lại như sau:
     const onFinish = async (values) => {
         setLoading(true);
         try {
+            // BƯỚC QUAN TRỌNG NHẤT: Ép kiểu Object Ngày/Giờ thành Chuỗi (String) chuẩn
             const payload = {
-                fullName: values.fullName,
-                phone: values.phone,
-                date: values.date.format('YYYY-MM-DD'),
-                time: values.time.format('HH:mm:ss'),
-                guestCount: values.guestCount,
-                note: values.note
+                ...values,
+                // Định dạng LocalDate của Spring Boot: YYYY-MM-DD
+                date: values.date ? values.date.format('YYYY-MM-DD') : null,
+                
+                // Định dạng LocalTime của Spring Boot: HH:mm:ss
+                time: values.time ? values.time.format('HH:mm:ss') : null,
+                
+                // Đảm bảo guestCount là số nguyên (tránh trường hợp chuỗi "2")
+                guestCount: Number(values.guestCount)
             };
+
+            // Gọi API với payload đã format
+            const response = await bookingService.createBooking(payload); 
             
-            const res = await bookingService.createBooking(payload);
-            if (res.success) {
-                message.success('Đặt bàn thành công! Hệ thống đang chuyển về danh sách đơn...');
-                form.resetFields(['date', 'time', 'guestCount', 'note']);
-                setTimeout(() => {
-                    navigate('/orders');
-                }, 1500);
+            if (response.success) {
+                message.success('Đặt bàn thành công!');
+                // form.resetFields(); hoặc navigate đi đâu đó tùy bạn
             }
         } catch (error) {
-            message.error(error.response?.data?.message || 'Có lỗi xảy ra khi đặt bàn');
+            console.error("Lỗi API Đặt bàn:", error.response);
+            message.error(error.response?.data?.message || 'Có lỗi xảy ra khi đặt bàn. Vui lòng thử lại!');
         } finally {
             setLoading(false);
         }

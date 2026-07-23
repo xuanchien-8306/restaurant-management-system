@@ -23,4 +23,13 @@ public interface MenuItemRepository extends JpaRepository<MenuItem, Long> {
                               @Param("minPrice") BigDecimal minPrice,
                               @Param("maxPrice") BigDecimal maxPrice,
                               Pageable pageable);
+
+    @Query("SELECT m FROM MenuItem m WHERE m.status != 'DELETED' AND " +
+            "(:keyword IS NULL OR LOWER(m.name) LIKE LOWER(CONCAT('%', :keyword, '%'))) AND " +
+            "(:categoryId IS NULL OR m.category.id = :categoryId) AND " +
+            "(:status IS NULL OR m.status = :status)")
+    Page<MenuItem> filterMenuAdmin(@Param("keyword") String keyword,
+                                   @Param("categoryId") Long categoryId,
+                                   @Param("status") String status,
+                                   Pageable pageable);
 }

@@ -2,7 +2,7 @@ package com.rms.controller;
 
 import com.rms.dto.ApiResponse;
 import com.rms.dto.BannerDto;
-import com.rms.dto.PromotionDto;
+import com.rms.dto.PromotionDtos.PromotionResponse;
 import com.rms.service.BannerService;
 import com.rms.service.PromotionService;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,9 @@ public class HomeController {
         return ResponseEntity.ok(new ApiResponse<>(true, "Success", bannerService.getActiveBanners()));
     }
 
+    // Đã cập nhật kiểu trả về thành PromotionResponse mới nhất
     @GetMapping("/promotions")
-    public ResponseEntity<ApiResponse<List<PromotionDto>>> getPromotions() {
+    public ResponseEntity<ApiResponse<List<PromotionResponse>>> getPromotions() {
         return ResponseEntity.ok(new ApiResponse<>(true, "Success", promotionService.getActivePromotions()));
     }
 }

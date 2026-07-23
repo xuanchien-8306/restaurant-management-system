@@ -23,10 +23,18 @@ const Login = () => {
             
             if (response.success) {
                 const { token, username, role } = response.data;
-                loginStore({ username, role }, token);
+                
+                // 1. Cập nhật state (Code cũ của bạn)
+                loginStore({ username, role }, token); 
+                
+                // 2. LƯU VÀO LOCAL STORAGE (BẮT BUỘC ĐỂ KHÔNG BỊ VĂNG)
+                localStorage.setItem('token', token);
+                localStorage.setItem('user', JSON.stringify({ username, role }));
+                
                 message.success('Đăng nhập thành công!');
                 
-                if (role === 'ADMIN' || role === 'STAFF') {
+                // 3. Phân quyền chuyển hướng
+                if (role === 'ADMIN' || role === 'STAFF' || role === 'MANAGER' || role === 'CASHIER' || role === 'WAITER' || role === 'KITCHEN') {
                     navigate('/admin/dashboard');
                 } else {
                     navigate('/');

@@ -35,9 +35,21 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        // Cập nhật mở khóa các API xem dữ liệu public
+                        // 1. Kênh Public
                         .requestMatchers("/api/auth/**", "/api/home/**", "/api/categories/**", "/api/foods/**", "/api/menu/**").permitAll()
-                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "STAFF")
+
+                        // 2. Kênh Khách hàng (ĐÃ FIX LỖI 403)
+                        // Cấp quyền cho USER/CUSTOMER truy cập vào Orders, Bookings, Cart
+                        .requestMatchers(
+                                "/api/orders", "/api/orders/**",
+                                "/api/bookings", "/api/bookings/**",
+                                "/api/cart", "/api/cart/**",
+                                "/api/profile", "/api/profile/**"
+                        ).hasAnyAuthority("CUSTOMER", "ROLE_CUSTOMER", "USER", "ROLE_USER")
+                        // 3. Kênh Admin
+                        .requestMatchers("/api/admin/**").hasAnyAuthority("ADMIN", "ROLE_ADMIN", "MANAGER", "ROLE_MANAGER", "STAFF", "ROLE_STAFF", "CASHIER", "WAITER", "KITCHEN")
+
+                        // 4. Các request khác
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -1,25 +1,30 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useAuthStore = create((set) => ({
-    user: localStorage.getItem('token') ? {
-        username: localStorage.getItem('username'),
-        role: localStorage.getItem('role')
-    } : null,
-    token: localStorage.getItem('token') || null,
-    
-    login: (userData, token) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('username', userData.username);
-        localStorage.setItem('role', userData.role);
-        set({ user: userData, token });
-    },
-    
-    logout: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('username');
-        localStorage.removeItem('role');
-        set({ user: null, token: null });
-    }
-}));
+const useAuthStore = create(
+    persist(
+        (set) => ({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+
+            login: (userData, token) => set({
+                user: userData,
+                token: token,
+                isAuthenticated: true
+            }),
+
+            logout: () => set({
+                user: null,
+                token: null,
+                isAuthenticated: false
+            }),
+        }),
+        {
+            name: 'auth-storage', // Lưu tên key vào localStorage
+            getStorage: () => localStorage,
+        }
+    )
+);
 
 export default useAuthStore;

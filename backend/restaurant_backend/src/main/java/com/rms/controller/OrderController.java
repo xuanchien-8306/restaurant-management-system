@@ -1,39 +1,65 @@
 package com.rms.controller;
 
 import com.rms.dto.ApiResponse;
-import com.rms.dto.OrderDto;
-import com.rms.dto.OrderRequest;
+import com.rms.dto.PageResponse;
+import com.rms.dto.OrderDtos.*;
 import com.rms.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/api/admin/orders")
 @RequiredArgsConstructor
 public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<OrderDto>> createOrder(@Valid @RequestBody OrderRequest request, Authentication authentication) {
-        OrderDto order = orderService.createOrder(request, authentication.getName());
-        return ResponseEntity.ok(new ApiResponse<>(true, "Đặt món thành công", order));
-    }
-
-    @GetMapping("/my")
-    public ResponseEntity<ApiResponse<List<OrderDto>>> getMyOrders(Authentication authentication) {
-        List<OrderDto> orders = orderService.getMyOrders(authentication.getName());
-        return ResponseEntity.ok(new ApiResponse<>(true, "Thành công", orders));
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<OrderResponse>>> getOrders(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String orderType,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "DESC") String sortDir) {
+        return ResponseEntity.ok(new ApiResponse<>(true, "Thành công",
+                orderService.getOrders(keyword, status, orderType, page, size, sortBy, sortDir)));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<OrderDto>> getOrderById(@PathVariable Long id, Authentication authentication) {
-        OrderDto order = orderService.getOrderById(id, authentication.getName());
-        return ResponseEntity.ok(new ApiResponse<>(true, "Thành công", order));
+    public ResponseEntity<ApiResponse<OrderResponse>> getOrderById(@PathVariable Long id) {
+        return ResponseEntity.ok(new ApiResponse<>(true, "Thành công", orderService.getOrderById(id)));
+    }
+
+    @GetMapping("/dependencies")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDependencies() {
+        return ResponseEntity.ok(new ApiResponse<>(true, "Thành công", orderService.getOrderDependencies()));
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<OrderResponse>> createOrder(@Valid @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(new ApiResponse<>(true, "Tạo đơn hàng thành công", orderService.createOrder(request)));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(@PathVariable Long id, @Valid @RequestBody OrderRequest request) {
+        return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật đơn hàng thành công", orderService.updateOrder(id, request)));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<ApiResponse<String>> changeStatus(@PathVariable Long id, @RequestParam String status) {
+        orderService.changeOrderStatus(id, status);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Cập nhật trạng thái thành công", null));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse<String>> cancelOrder(@PathVariable Long id) {
+        orderService.cancelOrder(id);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Hủy đơn hàng thành công", null));
     }
 }

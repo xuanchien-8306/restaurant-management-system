@@ -33,4 +33,14 @@ public class Customer {
 
     @Column(length = 255)
     private String address;
+
+    @Column(length = 20)
+    private String status;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.status == null) {
+            this.status = "ACTIVE";
+        }
+    }
 }

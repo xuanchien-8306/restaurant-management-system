@@ -41,7 +41,7 @@ public class DataInitializer implements CommandLineRunner {
         if (!accountRepository.existsByUsername("admin")) {
             Account adminAccount = Account.builder()
                     .username("admin")
-                    .password(passwordEncoder.encode("Admin@123"))
+                    .password(passwordEncoder.encode("123456"))
                     .email("admin@restaurant.com")
                     .phone("0000000000") // Dummy phone to pass validation
                     .role(adminRole)
